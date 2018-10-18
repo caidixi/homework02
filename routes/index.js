@@ -1,6 +1,8 @@
 let express = require('express');
 let router = express.Router();
 let db = require("../module/db");
+let jwt = require('jsonwebtoken');
+const secret = 'bingo';
 
 /* 登陆. */
 router.post('/user/login', async function (req, res/*, next*/) {
@@ -17,9 +19,11 @@ router.post('/user/login', async function (req, res/*, next*/) {
         let aPassword = users[i].password;
         if(aName === username){
             if(aPassword===password){
+                let token = jwt.sign({username:123},secret);
                 return res.send({
                     'state': 0,
-                    'url': '/show.html'
+                    'url': '/show.html',
+                    'token':token
                 });
             }
         }
@@ -53,15 +57,6 @@ router.post('/user/register', async function (req, res/*, next*/) {
             'state': 1
         });
     }
-});
-
-/* 查询表 */
-router.get('/find', async function () {
-    let sqlString = 'SELECT * FROM user';
-    let connection = db.connection();
-    let result = await db.select(connection, sqlString);
-    console.log(result);
-    //db.close(connection);
 });
 
 module.exports = router;
